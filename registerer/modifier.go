@@ -22,6 +22,8 @@ func NewModifierRegisterer(pluginName string) ModifierRegisterer {
 	return reg
 }
 
+func (reg ModifierRegisterer) RegisterLogger(v any) {}
+
 func (reg ModifierRegisterer) AddModifier(name string, f ModifierFunc) {
 	reg.modifiers[name] = f
 }
@@ -51,19 +53,6 @@ func (reg ModifierRegisterer) RegisterModifiers(f func(
 	}
 }
 
-func (reg ModifierRegisterer) Debug() string {
-	sb := strings.Builder{}
-
-	sb.WriteString("Modifiers register for plugin: `" + reg.pluginName + "`\n")
-	sb.WriteString("Modifiers count: " + strconv.Itoa(len(reg.modifiers)))
-	for name, modifier := range reg.modifiers {
-		sb.WriteString(" - Modifier `" + name + "`: ")
-		sb.WriteString(fmt.Sprintf("%p\n", modifier))
-	}
-
-	return sb.String()
-}
-
 // Stubs
 
 func (reg ModifierRegisterer) RegisterHandlers(f func(
@@ -76,4 +65,17 @@ func (reg ModifierRegisterer) RegisterClients(f func(
 	name string,
 	handler func(context.Context, map[string]any) (http.Handler, error),
 )) {
+}
+
+func (reg ModifierRegisterer) Debug() string {
+	sb := strings.Builder{}
+
+	sb.WriteString("Modifiers register for plugin: `" + reg.pluginName + "`\n")
+	sb.WriteString("Modifiers count: " + strconv.Itoa(len(reg.modifiers)))
+	for name, modifier := range reg.modifiers {
+		sb.WriteString(" - Modifier `" + name + "`: ")
+		sb.WriteString(fmt.Sprintf("%p\n", modifier))
+	}
+
+	return sb.String()
 }
