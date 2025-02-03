@@ -22,8 +22,6 @@ func NewModifierRegisterer(pluginName string) ModifierRegisterer {
 	return reg
 }
 
-func (reg ModifierRegisterer) RegisterLogger(v any) {}
-
 func (reg ModifierRegisterer) AddModifier(name string, f ModifierFunc) {
 	reg.modifiers[name] = f
 }
