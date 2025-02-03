@@ -11,16 +11,13 @@ type ModifierPlugin struct {
 	name    string
 	version string
 
-	logger log.Logger
-
 	modifier registerer.ModifierRegisterer
 }
 
-func NewModifier(name string, version string) *ModifierPlugin {
+func NewModifier(name string, version string, logger log.Logger) *ModifierPlugin {
 	plug := &ModifierPlugin{
 		name:    name,
 		version: version,
-		logger:  log.NoopLogger{},
 	}
 
 	plug.modifier = registerer.NewModifierRegisterer(plug.name)
@@ -42,8 +39,6 @@ func (plug *ModifierPlugin) RequestHandler(f func() registerer.ModifierFunc) {
 func (plug *ModifierPlugin) ResponseHandler(f func() registerer.ModifierFunc) {
 	plug.modifier.AddModifier("response", f())
 }
-
-func (plug *ModifierPlugin) Logger() log.Logger { return plug.logger }
 
 func (plug *ModifierPlugin) Debug() string {
 	sb := strings.Builder{}
