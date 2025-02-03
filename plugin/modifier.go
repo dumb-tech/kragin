@@ -3,7 +3,6 @@ package plugin
 import (
 	"strings"
 
-	"github.com/dumb-tech/kragin/log"
 	"github.com/dumb-tech/kragin/registerer"
 )
 
@@ -14,7 +13,7 @@ type ModifierPlugin struct {
 	modifier registerer.ModifierRegisterer
 }
 
-func NewModifier(name string, version string, logger log.Logger) *ModifierPlugin {
+func NewModifier(name string, version string) *ModifierPlugin {
 	plug := &ModifierPlugin{
 		name:    name,
 		version: version,
