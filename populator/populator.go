@@ -40,7 +40,7 @@ func Populate(source, target any) error {
 
 	tt := tv.Type()
 
-	for i := range tv.NumField() {
+	for i := 0; i < tv.NumField(); i++ {
 		fieldValue := tv.Field(i)
 		if fieldValue.Kind() == reflect.Struct {
 			if !fieldValue.Addr().CanInterface() {
@@ -78,13 +78,16 @@ func Populate(source, target any) error {
 			}
 		}
 
-		if !ok {
-			switch {
-			case tag.def == "":
+		if ok {
+			if str, isStr := val.(string); isStr && str == "" && tag.def != "" {
 				val = tag.def
-			case tag.req:
+			}
+		} else {
+			if tag.def != "" {
+				val = tag.def
+			} else if tag.req {
 				return ErrRequiredValueIsMissing(tag.keys[0])
-			default:
+			} else {
 				continue
 			}
 		}
@@ -117,67 +120,121 @@ func transform(source any, target any) error {
 		return errors.New("target must be a non-nil pointer")
 	}
 	targetElem := targetValue.Elem()
+
 	switch v := source.(type) {
 	case string:
-		var result any
 		var err error
 		switch targetElem.Kind() {
 		case reflect.Int:
-			switch targetElem.Type() {
-			case reflect.TypeOf(0):
-				result = int(targetElem.Int())
-			case reflect.TypeOf(""):
-				result, err = strconv.Atoi(v)
+			var i int
+			i, err = strconv.Atoi(v)
+			if err != nil {
+				return err
 			}
+			targetElem.SetInt(int64(i))
 		case reflect.Int64:
 			if targetElem.Type() == reflect.TypeOf(time.Duration(0)) {
-				result, err = time.ParseDuration(v)
+				var d time.Duration
+				d, err = time.ParseDuration(v)
+				if err != nil {
+					return err
+				}
+				targetElem.SetInt(int64(d))
 			} else {
-				result, err = strconv.ParseInt(v, 10, 64)
+				var i int64
+				i, err = strconv.ParseInt(v, 10, 64)
+				if err != nil {
+					return err
+				}
+				targetElem.SetInt(i)
 			}
 		case reflect.Float32:
 			var f float64
 			f, err = strconv.ParseFloat(v, 32)
-			result = float32(f)
+			if err != nil {
+				return err
+			}
+			targetElem.SetFloat(f)
 		case reflect.Float64:
-			result, err = strconv.ParseFloat(v, 64)
+			var f float64
+			f, err = strconv.ParseFloat(v, 64)
+			if err != nil {
+				return err
+			}
+			targetElem.SetFloat(f)
 		case reflect.Struct:
 			if targetElem.Type() == reflect.TypeOf(time.Time{}) {
-				result, err = time.Parse(time.RFC3339, v)
+				var t time.Time
+				t, err = time.Parse(time.RFC3339, v)
+				if err != nil {
+					return err
+				}
+				targetElem.Set(reflect.ValueOf(t))
 			} else {
 				return fmt.Errorf("unsupported target struct type: %T", targetElem.Interface())
 			}
 		case reflect.String:
-			result = v
+			targetElem.SetString(v)
 		default:
 			return fmt.Errorf("unsupported target type: %T", targetElem.Interface())
 		}
-		if err != nil {
-			return err
-		}
-		targetElem.Set(reflect.ValueOf(result))
 		return nil
 
 	case int, int64, float32, float64:
+		// Если в source уже число, выполняем соответствующее преобразование.
 		switch targetElem.Kind() {
-		case reflect.Int64:
-			targetElem.SetInt(v.(int64))
 		case reflect.Int:
-			targetElem.SetInt(int64(v.(int)))
+			switch val := v.(type) {
+			case int:
+				targetElem.SetInt(int64(val))
+			case int64:
+				targetElem.SetInt(val)
+			case float32:
+				targetElem.SetInt(int64(val))
+			case float64:
+				targetElem.SetInt(int64(val))
+			}
+		case reflect.Int64:
+			switch val := v.(type) {
+			case int:
+				targetElem.SetInt(int64(val))
+			case int64:
+				targetElem.SetInt(val)
+			case float32:
+				targetElem.SetInt(int64(val))
+			case float64:
+				targetElem.SetInt(int64(val))
+			}
 		case reflect.Float32:
-			targetElem.SetFloat(float64(v.(float32)))
+			switch val := v.(type) {
+			case int:
+				targetElem.SetFloat(float64(val))
+			case int64:
+				targetElem.SetFloat(float64(val))
+			case float32:
+				targetElem.SetFloat(float64(val))
+			case float64:
+				targetElem.SetFloat(val)
+			}
 		case reflect.Float64:
-			targetElem.SetFloat(v.(float64))
+			switch val := v.(type) {
+			case int:
+				targetElem.SetFloat(float64(val))
+			case int64:
+				targetElem.SetFloat(float64(val))
+			case float32:
+				targetElem.SetFloat(float64(val))
+			case float64:
+				targetElem.SetFloat(val)
+			}
 		default:
-			panic("unhandled default case")
+			return fmt.Errorf("unsupported target type: %T", targetElem.Interface())
 		}
 		return nil
 
 	default:
 		return fmt.Errorf("unsupported source type: %T", source)
 	}
-
-	return nil
 }
 
 type tag struct {
