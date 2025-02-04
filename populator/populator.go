@@ -92,7 +92,7 @@ func Populate(source, target any) error {
 			}
 		}
 
-		if err := set(fieldType.Type, fieldValue, val); err != nil {
+		if err := set(fieldValue, val); err != nil {
 			return fmt.Errorf("failed to set value for field %q: %w", fieldType.Name, err)
 		}
 
@@ -102,7 +102,7 @@ func Populate(source, target any) error {
 	return nil
 }
 
-func set(t reflect.Type, f reflect.Value, value any) error {
+func set(f reflect.Value, value any) error {
 	if !f.CanSet() {
 		return errors.New("cannot set field")
 	}
