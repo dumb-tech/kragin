@@ -1,3 +1,5 @@
+## ⚠️ This project isn't stable at the moment. Use in production at your own risk!
+
 # kragin :rocket:
 
 > **Version**: `v0.3.1`  
