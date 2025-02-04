@@ -90,7 +90,7 @@ func Populate(source, target any) error {
 		}
 
 		if err := set(fieldType.Type, fieldValue, val); err != nil {
-			return err
+			return fmt.Errorf("failed to set value for field %q: %w", fieldType.Name, err)
 		}
 
 		delete(in, fieldTag)
@@ -123,7 +123,12 @@ func transform(source any, target any) error {
 		var err error
 		switch targetElem.Kind() {
 		case reflect.Int:
-			result, err = strconv.Atoi(v)
+			switch targetElem.Type() {
+			case reflect.TypeOf(0):
+				result = int(targetElem.Int())
+			case reflect.TypeOf(""):
+				result, err = strconv.Atoi(v)
+			}
 		case reflect.Int64:
 			if targetElem.Type() == reflect.TypeOf(time.Duration(0)) {
 				result, err = time.ParseDuration(v)
