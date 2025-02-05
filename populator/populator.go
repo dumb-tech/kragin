@@ -162,6 +162,13 @@ func transform(source any, target any) error {
 				return err
 			}
 			targetElem.SetFloat(f)
+		case reflect.Bool:
+			var b bool
+			b, err = strconv.ParseBool(v)
+			if err != nil {
+				return err
+			}
+			targetElem.SetBool(b)
 		case reflect.Struct:
 			if targetElem.Type() == reflect.TypeOf(time.Time{}) {
 				var t time.Time
@@ -180,8 +187,14 @@ func transform(source any, target any) error {
 		}
 		return nil
 
+	case bool:
+		if targetElem.Kind() == reflect.Bool {
+			targetElem.SetBool(v)
+			return nil
+		}
+		return fmt.Errorf("unsupported target type: %T", targetElem.Interface())
+
 	case int, int64, float32, float64:
-		// Если в source уже число, выполняем соответствующее преобразование.
 		switch targetElem.Kind() {
 		case reflect.Int:
 			switch val := v.(type) {
