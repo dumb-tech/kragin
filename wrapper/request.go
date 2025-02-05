@@ -41,7 +41,7 @@ type RequestWrapper struct {
 	path    string
 	body    io.ReadCloser
 	params  map[string]string
-	headers map[string][]string
+	headers url.Values
 }
 
 func (r *RequestWrapper) Context() context.Context { return r.ctx }
@@ -49,6 +49,7 @@ func (r *RequestWrapper) Method() string           { return r.method }
 func (r *RequestWrapper) URL() *url.URL            { return r.url }
 func (r *RequestWrapper) Query() url.Values        { return r.query }
 func (r *RequestWrapper) Path() string             { return r.path }
+func (r *RequestWrapper) Headers() url.Values      { return r.headers }
 
 func (r *RequestWrapper) Body() io.ReadCloser {
 	restore, ret := &bytes.Buffer{}, &bytes.Buffer{}
