@@ -3,9 +3,10 @@
 # kragin :rocket:
 
 > **Version**: `v0.3.1`  
-> **Description**: The package provides a set of tools for developing [Krakend](https://www.krakend.io/) plugins.
+> **Description**: The package provides a set of tools for developing [KrakenD](https://www.krakend.io/) plugins.  
+> **Compatibility**: package dependency compatibility version and KrackenD (`v0.3.1` <-> `v2.6.1`)
 
-Welcome to **kragin**! This repository contains various helper packages that simplify plugin creation for the [Krakend API Gateway](https://www.krakend.io/community/).
+Welcome to **kragin**! This repository contains various helper packages that simplify plugin creation for the [KrakenD API Gateway](https://www.krakend.io/community/).
 
 ## Features :sparkles:
 - **Log**: Minimalistic logging interface + a no-op implementation.
@@ -126,4 +127,4 @@ We :heart: contributions! Feel free to open issues or submit pull requests.
 This project is licensed under the 
 [GNU General Public License v3.0 (GPLv3)](https://www.gnu.org/licenses/gpl-3.0.txt).
 
-#### This Markdown powered by ChatGPT o1
+#### This Markdown made with ChatGPT o1
