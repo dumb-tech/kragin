@@ -181,7 +181,6 @@ func transform(source any, target any) error {
 		return nil
 
 	case int, int64, float32, float64:
-		// Если в source уже число, выполняем соответствующее преобразование.
 		switch targetElem.Kind() {
 		case reflect.Int:
 			switch val := v.(type) {
