@@ -11,19 +11,19 @@ const (
 	errCodeRequiredValueIsMissing
 )
 
-type populatorError struct {
+type Error struct {
 	code int
 	text string
 }
 
-func (p populatorError) Error() string { return p.text }
-func (p populatorError) Is(err error) bool {
-	e, ok := err.(populatorError)
+func (p Error) Error() string { return p.text }
+func (p Error) Is(err error) bool {
+	e, ok := err.(Error)
 	return ok && (e.code == p.code)
 }
 
-func newPopulatorError(code int, text string) populatorError {
-	return populatorError{
+func newPopulatorError(code int, text string) Error {
+	return Error{
 		code: code,
 		text: text,
 	}
@@ -50,12 +50,12 @@ var ErrWrongInputDataType = func(actual, wants any) error {
 	)
 }
 
-var ErrInvalidTargetType = func(field string) error {
+var ErrInvalidTargetType = func(field string) Error {
 	return newPopulatorError(
 		errCodeWrongInvalidStructType,
 		fmt.Sprintf("invalid target type for field %s", field))
 }
-var ErrFieldIsPrivate = func(field string) error {
+var ErrFieldIsPrivate = func(field string) Error {
 	return newPopulatorError(
 		errCodeFieldIsPrivate,
 		fmt.Sprintf("field %s is private", field))

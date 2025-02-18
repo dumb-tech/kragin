@@ -29,16 +29,17 @@ func Populate(source, target any) error {
 	}
 
 	tv := reflect.ValueOf(target)
+	tt := tv.Type()
 	if tv.Kind() != reflect.Ptr || tv.IsNil() {
-		return ErrInvalidTargetType
+		return ErrInvalidTargetType(tt.Name())
 	}
 
 	tv = tv.Elem()
 	if tv.Kind() != reflect.Struct {
-		return ErrInvalidTargetType
+		return ErrInvalidTargetType(tt.Name())
 	}
 
-	tt := tv.Type()
+	//tt := tv.Type()
 
 	for i := 0; i < tv.NumField(); i++ {
 		fieldValue := tv.Field(i)
