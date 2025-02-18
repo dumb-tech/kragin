@@ -50,12 +50,15 @@ var ErrWrongInputDataType = func(actual, wants any) error {
 	)
 }
 
-var ErrInvalidTargetType = newPopulatorError(errCodeWrongInvalidStructType, "invalid target type")
+var ErrInvalidTargetType = func(field string) error {
+	return newPopulatorError(
+		errCodeWrongInvalidStructType,
+		fmt.Sprintf("invalid target type for field %s", field))
+}
 var ErrFieldIsPrivate = func(field string) error {
 	return newPopulatorError(
 		errCodeFieldIsPrivate,
-		fmt.Sprintf("field %s is private", field),
-	)
+		fmt.Sprintf("field %s is private", field))
 }
 
 var ErrRequiredValueIsMissing = func(field string) error {
