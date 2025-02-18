@@ -195,6 +195,23 @@ func transform(source any, target any) error {
 		return fmt.Errorf("unsupported target type: %T", targetElem.Interface())
 
 	case int, int64, float32, float64:
+		if targetElem.Type() == reflect.TypeOf(time.Duration(0)) {
+			var d time.Duration
+			switch num := v.(type) {
+			case int:
+				d = time.Duration(num)
+			case int64:
+				d = time.Duration(num)
+			case float32:
+				d = time.Duration(num)
+			case float64:
+				d = time.Duration(num)
+			default:
+				return fmt.Errorf("unsupported numeric type for time.Duration: %T", v)
+			}
+			targetElem.SetInt(int64(d))
+			return nil
+		}
 		switch targetElem.Kind() {
 		case reflect.Int:
 			switch val := v.(type) {
