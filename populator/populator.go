@@ -95,8 +95,6 @@ func Populate(source, target any) error {
 		if err := set(fieldValue, val); err != nil {
 			return fmt.Errorf("failed to set value for field %q: %w", fieldType.Name, err)
 		}
-
-		delete(in, fieldTag)
 	}
 
 	return nil
